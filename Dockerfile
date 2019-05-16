@@ -10,6 +10,6 @@ FROM balenalib/raspberrypi3-alpine-python:3-run
 COPY --from=builder /install /usr/local
 
 RUN mkdir /app
-COPY main.py /app
+COPY *.py /app/
 
 CMD [ "python3", "/app/main.py" ]

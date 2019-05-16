@@ -1,1 +1,2 @@
 rpi-rfm69
+paho-mqtt
