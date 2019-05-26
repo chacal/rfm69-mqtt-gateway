@@ -37,6 +37,7 @@ def to_json(radio_packet):
 
 def forward_from_radio_to_mqtt(radio, mqtt):
     for packet in radio.get_packets():
+        radio._setMode(1)  # Force radio to STANDBY to work around high background noise that prevents ack TX if radio is in RX
         radio.send_ack(packet.sender)
         mqtt.publish_message(conf.rx_topic, to_json(packet))
 
