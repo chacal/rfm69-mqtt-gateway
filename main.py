@@ -16,7 +16,7 @@ conf = SimpleNamespace(**{
     # Radio settings
     "node_id": os.getenv('NODE_ID', 1),
     "network_id": os.getenv('NETWORK_ID', 50),
-    "radio_power": os.getenv('RADIO_POWER', 80),
+    "radio_power": int(os.getenv('RADIO_POWER', 80)),
     "interrupt_pin": os.getenv('INTERRUPT_PIN', 15),
     "reset_pin": os.getenv('RESET_PIN', 16),
     "spi_bus": os.getenv('SPI_BUS', 0),
