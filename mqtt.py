@@ -21,6 +21,9 @@ class MQTT():
     def publish_message(self, topic, message):
         self.mqtt.publish(topic, message)
 
+    def disconnect(self):
+        self.mqtt.disconnect()
+
     def __connect_mqtt_client(self, broker, topic):
         self.mqtt.connect(broker)
         self.mqtt.subscribe(topic)

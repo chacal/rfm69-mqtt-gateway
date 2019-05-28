@@ -1,6 +1,7 @@
 import time
 import json
 import os
+import signal
 from RFM69 import Radio, FREQ_433MHZ
 from mqtt import MQTT
 from datetime import datetime
@@ -54,16 +55,32 @@ def forward_from_mqtt_to_radio(mqtt, radio):
             print("Invalid RFM69 receiver: %s" % receiver_str)
 
 
+def handle_stop_signals(signum, frame):
+    global running
+    print("Received signal %d." % signum)
+    running = False
+
+
+running = True
+
 with Radio(FREQ_433MHZ, conf.node_id, conf.network_id, isHighPower=True, power=conf.radio_power,
            interruptPin=conf.interrupt_pin, resetPin=conf.reset_pin, spiBus=conf.spi_bus, spiDevice=conf.spi_device,
            autoAcknowledge=False) as radio:
+    signal.signal(signal.SIGINT, handle_stop_signals)
+    signal.signal(signal.SIGTERM, handle_stop_signals)
+
     print("rfm69-mqtt-gateway starting..")
     print("Used configuration:")
     pprint(conf.__dict__)
 
     mqtt = MQTT(conf.mqtt_broker, conf.tx_subs_topic)
 
-    while True:
+    while running:
         forward_from_radio_to_mqtt(radio, mqtt)
         forward_from_mqtt_to_radio(mqtt, radio)
         time.sleep(0.01)
+
+    print("Disconnecting MQTT.")
+    mqtt.disconnect()
+
+print("Exiting.")
