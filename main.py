@@ -78,7 +78,7 @@ with Radio(FREQ_433MHZ, conf.node_id, conf.network_id, isHighPower=True, power=c
     while running:
         forward_from_radio_to_mqtt(radio, mqtt)
         forward_from_mqtt_to_radio(mqtt, radio)
-        time.sleep(0.02)
+        time.sleep(0.005)
 
     print("Disconnecting MQTT.")
     mqtt.disconnect()
