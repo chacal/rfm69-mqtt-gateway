@@ -7,6 +7,7 @@ from mqtt import MQTT
 from datetime import datetime
 from types import SimpleNamespace
 from pprint import pprint
+from collections import deque
 
 conf = SimpleNamespace(**{
     # MQTT settings
@@ -21,7 +22,8 @@ conf = SimpleNamespace(**{
     "interrupt_pin": os.getenv('INTERRUPT_PIN', 15),
     "reset_pin": os.getenv('RESET_PIN', 16),
     "spi_bus": os.getenv('SPI_BUS', 0),
-    "spi_device": os.getenv('SPI_DEVICE', 1)
+    "spi_device": os.getenv('SPI_DEVICE', 1),
+    "rx_buffer_len_ms": os.getenv('RX_BUFFER_LEN_MS', 200)
 })
 
 
@@ -36,11 +38,18 @@ def to_json(radio_packet):
     return json.dumps(ret)
 
 
+def already_received(radio_packet):
+    global rx_buffer
+    now = datetime.utcnow().timestamp()
+    previously_received = next((p for p in rx_buffer if now - p.received.timestamp() < conf.rx_buffer_len_ms / 1000 and radio_packet.data == p.data), False)
+    rx_buffer.append(radio_packet)
+    return True if previously_received else False
+
+
 def forward_from_radio_to_mqtt(radio, mqtt):
     for packet in radio.get_packets():
-        radio._setMode(1)  # Force radio to STANDBY to work around high background noise that prevents ack TX if radio is in RX
-        radio.send_ack(packet.sender)
-        mqtt.publish_message(conf.rx_topic, to_json(packet))
+        if not already_received(packet):
+            mqtt.publish_message(conf.rx_topic, to_json(packet))
 
 
 def forward_from_mqtt_to_radio(mqtt, radio):
@@ -62,6 +71,7 @@ def handle_stop_signals(signum, frame):
 
 
 running = True
+rx_buffer = deque(maxlen = 10)
 
 with Radio(FREQ_433MHZ, conf.node_id, conf.network_id, isHighPower=True, power=conf.radio_power,
            interruptPin=conf.interrupt_pin, resetPin=conf.reset_pin, spiBus=conf.spi_bus, spiDevice=conf.spi_device,
