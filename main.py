@@ -16,14 +16,14 @@ conf = SimpleNamespace(**{
     "rx_topic": os.getenv('RX_TOPIC', "/rfm69gw/rx"),
 
     # Radio settings
-    "node_id": os.getenv('NODE_ID', 1),
-    "network_id": os.getenv('NETWORK_ID', 50),
+    "node_id": int(os.getenv('NODE_ID', 1)),
+    "network_id": int(os.getenv('NETWORK_ID', 50)),
     "radio_power": int(os.getenv('RADIO_POWER', 80)),
-    "interrupt_pin": os.getenv('INTERRUPT_PIN', 15),
-    "reset_pin": os.getenv('RESET_PIN', 16),
-    "spi_bus": os.getenv('SPI_BUS', 0),
-    "spi_device": os.getenv('SPI_DEVICE', 1),
-    "rx_buffer_len_ms": os.getenv('RX_BUFFER_LEN_MS', 200)
+    "interrupt_pin": int(os.getenv('INTERRUPT_PIN', 15)),
+    "reset_pin": int(os.getenv('RESET_PIN', 16)),
+    "spi_bus": int(os.getenv('SPI_BUS', 0)),
+    "spi_device": int(os.getenv('SPI_DEVICE', 1)),
+    "rx_buffer_len_ms": int(os.getenv('RX_BUFFER_LEN_MS', 200))
 })
 
 
