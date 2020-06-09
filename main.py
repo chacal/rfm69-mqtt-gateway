@@ -23,7 +23,7 @@ conf = SimpleNamespace(**{
     "reset_pin": int(os.getenv('RESET_PIN', 16)),
     "spi_bus": int(os.getenv('SPI_BUS', 0)),
     "spi_device": int(os.getenv('SPI_DEVICE', 1)),
-    "rx_buffer_len_ms": int(os.getenv('RX_BUFFER_LEN_MS', 200))
+    "rx_buffer_len_ms": int(os.getenv('RX_BUFFER_LEN_MS', 100))
 })
 
 
